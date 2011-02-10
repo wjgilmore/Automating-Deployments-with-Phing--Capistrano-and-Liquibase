@@ -1,0 +1,707 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"> 
+<head> 
+  <title>Automating with Phing</title> 
+  <meta name="copyright" content="Copyright &#169; 2010-2011 W.J. Gilmore, LLC" /> 
+  <link rel="stylesheet" type="text/css" media="screen, projection, print" href="slidy.css" /> 
+  <link rel="stylesheet" type="text/css" media="screen, projection, print" href="w3c-blue.css" /> 
+  <script src="slidy.js" 
+   charset="utf-8" type="text/javascript"></script> 
+  <style type="text/css"> 
+    div.slide h1 {
+        color: white;
+        font-size: 160%;
+        height: 2.2em;
+        line-height: 1.1em;
+        margin: -0.05em 0 0.8em;
+        min-height: 2.3em;
+        padding-left: 9em;
+        padding-right: 3em;
+        padding-top: 0.5em;
+    }
+    div.background {
+      background: #1d1d1b;
+      background-image: url("bg.png");
+      background-repeat: repeat-x;
+      border-bottom: 2px solid black;
+      height: 95px;
+    }
+    #head-icon {
+      width: 280px;
+      max-width: 280px;
+      height: 90px;
+      padding: 0px;
+      margin: 0px;
+    }
+  </style> 
+</head>
+<body>
+
+<div class="background"> 
+  <img id="head-icon" alt="graphic with four colored squares" src="logo.png" />
+</div> 
+
+<div class="slide">
+<h1>Automating and Deploying with Phing</h1>
+
+<p>
+ <p><a href="http://www.wjgilmore.com/">W. Jason Gilmore</a>  (wj@wjgilmore.com). Follow me on the Twitter at @wjgilmore
+</p>
+
+</div>
+
+<div class="slide">
+<h1>My Background </h1>
+  
+<ul>
+  <li>Freelance web developer since 1998 (Apress, The Ohio State University, GRAMMY.com, and many small businesses</li>
+  <li>Author of 7 books (4 with Apress, 3 independently published). 4 books scheduled for publication in 2011.</li>
+  <li>Edited &gt; 60 books as Apress' OSED</li>
+  <li>Contributor to Developer.com, PHPBuilder.com, JSMag, and TechTarget</li>
+  <li>Freelance project editor for Wiley</li>
+  <li>CodeMash Cofounder (<a href="http://www.codemash.org">www.codemash.org</a>)</li>
+  <li>Contact me with questions! wj@wjgilmore.com and follow me on Twitter @wjgilmore</li>
+</ul>
+
+</div>
+
+<div class="slide">
+<h1>Zend Framework Workshop</h1>
+
+<div style="float:left; padding: 5px;">
+<img src="epwzf2.png" alt="" />
+</div>
+
+<div style="float:left;">
+<b>Ten Steps to Zend Framework Mastery</b><br />
+9am to 4pm workshop here in Columbus this Saturday<br />
+<a href="http://www.wjgilmore.com/training">http://www.wjgilmore.com/training</a><br />
+Attend for <b>$75</b> using the code columbusphp3
+
+<ul style="margin-left: 0px; font-size: 13px;">
+  <li>Step #1. Creating your First Zend Framework Project</li>
+  <li>Step #2. Managing Project Layouts and Views</li>
+  <li>Step #3. Effective Configuration Management Using Zend_Config</li>
+  <li>Step #4. Model-driven Forms Processing Using Zend_Form</li>
+  <li>Step #5. Database Interaction Using Zend_Db and Doctrine 2</li>
+  <li>Step #6. Test-driven Development Using PHPUnit and Zend_Test</li>
+  <li>Step #7. Web Services Integration</li>
+  <li>Step #8. jQuery and Ajax Integration</li>
+  <li>Step #9. Effective Zend Framework Project Deployment Using Phing</li>
+  <li>Step #10. Executing Zend Framework-driven Command Line PHP Scripts</li>
+</ul>
+
+</div>
+
+</div>
+
+<div class="slide">
+<h1>Beginning PHP and MySQL, Fourth Edition</h1>
+
+<div style="float:left; padding: 5px;">
+<img src="4e.png" alt="" />
+</div>
+
+<div style="float:left;">
+<b>Beginning PHP and MySQL, Fourth Edition</b><br />
+Buy it for <b>$25</b> from WJGilmore.com using the code columbusphp4
+
+</div>
+
+</div>
+
+<div class="slide">
+<h1>Automating Project Tasks and Deployment</h1>
+
+<ul>
+  <li>Creating new features is fun. Dealing with tedious tasks is not.</li>
+  <li>Remembering commands to run PHPDoc, git, mysqldump, phpunit, etc is practically impossible</li>
+  <li>Why aren't you automating everything you do more than five times?</li>
+</ul>
+</div>
+
+<p>
+There are many ways to accomplish these tasks. My goal to get you <i>thinking</i> about automation.
+</p>
+</div>
+
+<div class="slide">
+<h1>Introducing Phing</h1>
+<ul>
+  <li>Phing: <a href="http://www.phing.info/trac/">Phing Is Not Gnu Make</a></li>
+  <li>Platform independent XML-based build tool based on <a href="http://ant.apache.org/">Apache Ant</a></li>
+  <li>Dozens of native tasks capable of compressing JavaScript files, sending e-mail, analyzing PHP code (PHP_CodeSniffer), transferring files, and much more.</li>
+  <li>Phing is written in PHP, and you can use PHP to extend Phing</li>
+</ul>
+</div>
+
+<div class="slide">
+
+<h1>Installing Phing</h1>
+
+<pre>
+$ pear channel-discover pear.phing.info
+Adding Channel &quot;pear.phing.info&quot; succeeded
+Discovery of channel &quot;pear.phing.info&quot; succeeded
+
+$ pear install phing/phing
+downloading phing-2.4.2.1.tgz ...
+Starting to download phing-2.4.2.1.tgz (366,471 bytes)
+................done: 366,471 bytes
+install ok: channel://pear.phing.info/phing-2.4.2.1
+</pre>
+
+<p>
+Confirm Phing is installed:
+</p>
+
+<pre>
+%&gt;phing -v
+Phing 2.4.21
+</pre>
+
+</div>
+
+<div class="slide">
+
+<h1>Introducing Phing Targets</h1>
+
+<p>
+Phing <i>targets</i> are named groups of <i>tasks</i> you can define within the Phing build file (<code>build.xml</code>):
+</p>
+
+<pre>
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+ 
+&lt;project name=&quot;WJGames&quot; default=&quot;echo&quot;&gt;
+
+&lt;target name=&quot;echo&quot; description=&quot;Demonstration echo statement&quot;&gt;
+  &lt;echo msg=&quot;Cleaning Cache...&quot; /&gt;
+&lt;/target&gt;
+
+&lt;target name=&quot;backup&quot; description=&quot;Backup database&quot;&gt;
+  &lt;echo msg=&quot;Backing Up MySQL...&quot; /&gt;
+&lt;/target&gt;
+
+&lt;/project&gt;
+</pre>
+
+<p>
+To execute the target, you'll invoke the name via the command line:
+</p>
+
+<pre>
+$ phing echo
+</pre>
+
+<p>
+Phing will look for the build file in the current directory. You can specify a different directory like this:
+</p>
+
+<pre>
+$ phing -f build/build.xml echo
+</pre>
+
+<p>
+Notice that I've also defined a default target, meaning if you want to run the default you can just execute:
+</p>
+
+<pre>
+$ phing
+</pre>
+</div>
+
+<div class="slide">
+<h1>Listing Targets</h1>
+
+<p>
+To view a list of available targets, execute <code>phing</code> with the <code>-l</code> option:
+</p>
+
+<pre>
+$ phing -l
+</pre>
+
+</div>
+
+<div class="slide">
+<h1>Clearing a Cache</h1>
+  
+<pre>
+&lt;target name=&quot;clean&quot;&gt;
+  &lt;echo msg=&quot;Cleaning Cache...&quot; /&gt;
+  &lt;delete&gt;
+    &lt;fileset dir=&quot;./cache&quot;&gt;
+      &lt;include name=&quot;*&quot; /&gt;
+    &lt;/fileset&gt;
+  &lt;/delete&gt;
+&lt;/target&gt;
+</pre>
+  
+<p>
+Clean <code>cache</code> directory:
+</p>
+
+<pre>
+%&gt;phing clean
+</pre>
+
+</div>
+
+<div class="slide">
+<h1>Executing System Commands</h1>
+
+<p>
+Can use Phing's <code>exec</code> command to execute system commands:
+</p>
+
+<pre>
+&lt;target name=&quot;create&quot;&gt;
+  &lt;exec command=&quot;touch cache1.file&quot; dir=&quot;cache&quot; /&gt;
+  &lt;exec command=&quot;touch cache2.file&quot; dir=&quot;cache&quot; /&gt;
+  &lt;exec command=&quot;touch cache3.file&quot; dir=&quot;cache&quot; /&gt;
+&lt;/target&gt;
+</pre>
+</div>
+
+<div class="slide">
+<h1>Creating a Directory</h1>
+
+<pre>
+&lt;target name=&quot;prepare&quot;&gt;
+ &lt;echo msg=&quot;Creating the release directory&quot; /&gt;
+ &lt;mkdir dir=&quot;./release&quot; /&gt;
+&lt;/target&gt;
+</pre>
+</div>
+
+<div class="slide">
+<h1>Backing Up Your MySQL Database</h1>
+  
+<p>
+Backup MySQL database using <code>mysqldump</code>:
+</p>
+  
+<pre>
+$ mysqldump -u root -p dev_wjgames_com &gt; dev_wjgames_com_020911.sql
+</pre>
+
+<p>
+Need to remember username, password, come up with backup filename. So why not automate it?
+</p>
+
+<pre>
+&lt;!-- Set the DSTAMP, TSTAMP, and TODAY properties--&gt;
+&lt;tstamp /&gt;
+
+&lt;property name=&quot;mysql.dumpfile&quot; 
+          value=&quot;/home/wjgilmore/backups-db/wjgames${DSTAMP}${TSTAMP}.sql&quot; /&gt;
+&lt;property name=&quot;mysql.username&quot; value=&quot;root&quot; /&gt;
+&lt;property name=&quot;mysql.pswd&quot; value=&quot;jason&quot; /&gt;
+&lt;property name=&quot;mysql.database.dev&quot; value=&quot;dev_wjgames_com&quot; /&gt;
+
+...
+
+&lt;target name=&quot;backup&quot;&gt;
+ &lt;echo msg=&quot;Dumping development database.&quot; /&gt;
+ &lt;exec command=&quot;mysqldump -u ${mysql.username} -p${mysql.pswd} 
+                ${mysql.database.dev} &gt; ${db.dumpfile}&quot; escape=&quot;false&quot; /&gt;
+&lt;/target&gt;
+</pre>
+
+<p>
+Then just run the task:
+</p>
+
+<pre>
+%&gt;phing backup
+</pre>
+
+<p>
+Alternatively you can do this:
+</p>
+
+<pre>
+&lt;tstamp&gt;
+  &lt;format property=&quot;build.time&quot; pattern=&quot;%Y%m%d&quot; /&gt;
+&lt;/tstamp&gt;
+</pre>
+
+</div>
+
+<div class="slide">
+<h1>Deploying a Simple Website</h1>
+
+<p>
+It's easy to blame developers for bad practices. But the Web makes things too darned easy. FTP is probably the best such example. So what's wrong with FTP?
+</p>
+
+<ul>
+  <li>Slow. All selected files are transferred rather than only those that have changed.</li>
+  <li>Dumb. Just blindly transfers files without any consideration of platform-specific settings.</li>
+  <li>No Undo. How do you easily revert changes if a problem occurs?</li>
+</ul>
+
+<p>
+So what's the best alternative? There are many. :-)
+</p>
+
+</div>
+
+<div class="slide">
+<h1>Introducing Capistrano</h1>
+
+<p>
+Capistrano is a popular open source tool used by the Ruby community primarily for deploying web applications.
+</p>
+
+<ul>
+<li>Automatically rolls back the build should a problem occur</li>
+<li>Can perform "post-build" tasks such as symlinking</li>
+<li>Special version called <code>railsless-deploy</code> which removes "railsisms"</li>
+</ul>
+
+</div>
+
+<div class="slide">
+<h1>Installing Capistrano</h1>
+
+<p>
+We are actually going to install the "Railsless" version of Capistrano:
+</p>
+
+<pre>
+$ gem install capistrano
+$ gem install railsless-deploy
+</pre>
+
+<p>
+Next review the list of available commands:
+</p>
+
+<pre>
+$ cap -T
+cap deploy               # Deploys your project.
+cap deploy:check         # Test deployment dependencies.
+cap deploy:cleanup       # Clean up old releases.
+cap deploy:cold          # Deploys and starts a `cold' application.
+cap deploy:pending       # Displays the commits since your last deploy.
+cap deploy:pending:diff  # Displays the `diff' since your last deploy.
+cap deploy:rollback      # Rolls back to a previous version and restarts.
+cap deploy:rollback:code # Rolls back to the previously deployed version.
+cap deploy:setup         # Prepares one or more servers for deployment.
+cap deploy:symlink       # Updates the symlink to the most recently deployed ...
+cap deploy:update        # Copies your project and updates the symlink.
+cap deploy:update_code   # Copies your project to the remote servers.
+cap deploy:upload        # Copy files to the currently deployed version.
+cap invoke               # Invoke a single command on the remote servers.
+cap shell                # Begin an interactive Capistrano session.
+</pre>
+
+</div>
+
+<div class="slide">
+<h1>Using Capistrano</h1>
+
+<p>
+Create a file named <code>Capfile</code> and add the following three lines
+</p>
+
+<pre>
+require 'rubygems'
+require 'railsless-deploy'
+load    'config/deploy'
+</pre>
+
+<p>
+Now create a file named <code>config/deploy.rb</code> and add this to it:
+</p>
+
+<pre>
+# What user is connecting to the remote server?
+set :user, &quot;wjgilmore&quot;
+
+# Where is the local repository?
+set :repository,  &quot;file:///var/www/dev.wjgames.com&quot;
+
+# Where are we deploying the files to?
+set :deploy_to,   &quot;/home/wjgilmore/wjgames.wjgilmore.com&quot;
+
+# Where are the shared files stored?
+set :shared_path, &quot;/home/wjgilmore/wjgames.wjgilmore.com/current/shared&quot;
+
+# We don't need to use sudo to manipulate files on the remote server
+set :use_sudo, false
+ 
+# How are we retrieving and deploying the source files?
+
+set :scm,        :git
+set :branch,     'master'
+set :deploy_via, :copy
+ 
+# How many releases do we want to keep?
+set :keep_releases 5
+
+# Which server are we deploying to?
+
+role :web, &quot;wjgames.wjgilmore.com&quot;
+
+# Symlink the proper .htaccess file in order to make sure the 
+# production server's APPLICATION_ENV variable is set to production
+ 
+task :create_symlinks, :roles =&gt; :web do
+  run &quot;rm #{current_release}/public/.htaccess&quot;
+  run &quot;ln -s #{shared_path}/.htaccess #{current_release}/public/.htaccess&quot;
+end
+ 
+# Create the .htaccess symlink
+ 
+after &quot;deploy:finalize_update&quot;, :create_symlinks
+</pre>
+
+<p>
+Now run the following command. It will create the <code>releases</code> and <code>shared</code> directories on the remote server:
+</p>
+
+<pre>
+$ cap deploy:setup
+</pre>
+
+<p>
+When ready to deploy, run the following command:
+</p>
+
+<pre>
+$ cap deploy
+</pre>
+
+<p>
+Now add this to your <code>build.xml</code> file:
+</p>
+
+<pre>
+&lt;!-- Deploy website to production server --&gt;
+&lt;target name=&quot;deploy&quot; description=&quot;Deploy to production server&quot;&gt;
+  &lt;exec command=&quot;cap deploy&quot; /&gt;
+&lt;/target&gt;
+</pre>
+
+</div>
+
+<div class="slide">
+<h1>Rolling Back Changes</h1>
+
+<p>
+Capistrano stores several previous versions of the site. You can rollback to the most recent version using the following command:
+</p>
+
+<pre>
+$ cap deploy:rollback
+</pre>
+
+<p>
+Add this to your <code>build.xml</code> file:
+</p>
+
+<pre>
+&lt;!-- Rollback website on production server --&gt;
+&lt;target name=&quot;rollback&quot; description=&quot;Rollback latest changes&quot;&gt;
+  &lt;exec command=&quot;cap deploy:rollback&quot; /&gt;
+&lt;/target&gt;
+</pre>
+
+</div>
+
+<div class="slide">
+<h1>Task Dependencies</h1>
+
+<p>
+You might want to make sure other targets execute in a specific order in order to ensure the desired outcome. Use dependencies to do so:
+</p>
+  
+<pre>
+&lt;target name=&quot;build&quot; depends=&quot;prepare&quot;&gt;
+...
+&lt;/target&gt;
+</pre>
+
+</div>
+
+<div class="slide">
+<h1>Migrating Databases with Liquibase</h1>
+
+<ul>
+<li>Why are database changes treated differently than code changes?</li>
+<li>Versioning, merging, and rolling back schema changes strikes me as a good idea</li>
+<li>Several solutions exist, including <a href="http://dbdeploy.com/">DbDeploy</a> and <a href="http://www.liquibase.org/">Liquibase</a></li>
+<li>Phing includes a DbDeploy extension, but can't roll back changes</li>
+</ul>
+
+</div>
+
+<div class="slide">
+<h1>Using Liquibase</h1>
+
+<p>
+<a href="http://www.liquibase.org/">Liquibase</a> is an database refactoring solution which allows you to evolve a database over time using an XML-based log file.
+</p>
+
+<pre>
+$ liquibase --driver=com.mysql.jdbc.Driver \
+            --classpath=&quot;/usr/share/java/mysql-connector-java.jar&quot; 
+            --changeLogFile=&quot;/var/www/dev.wjgames.com/db.changelog.xml&quot; \ 
+            --url=&quot;jdbc:mysql://localhost/dev_wjgames_com&quot; \ 
+            --username=&quot;root&quot; \ 
+            --password=&quot;jason&quot; \
+            migrate
+</pre>
+
+<p>
+Requirements:
+</p>
+<ul>
+<li>Java 1.5 or greater</li>
+<li>MySQL JDBC drivers</li>
+</ul>
+
+</div>
+
+<div class="slide">
+<h1>The Liquibase Database Changelog</h1>
+
+<pre>
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+ 
+&lt;databaseChangeLog
+  xmlns=&quot;http://www.liquibase.org/xml/ns/dbchangelog/1.9&quot;
+  xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+  xsi:schemaLocation=&quot;http://www.liquibase.org/xml/ns/dbchangelog/1.9
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd&quot;&gt;
+ 
+  &lt;changeSet id=&quot;1&quot; author=&quot;wjgilmore&quot;&gt;
+    &lt;createTable tableName=&quot;accounts&quot;&gt;
+      &lt;column name=&quot;id&quot; type=&quot;int&quot;&gt;
+        &lt;constraints primaryKey=&quot;true&quot; nullable=&quot;false&quot;/&gt;
+      &lt;/column&gt;
+      &lt;column name=&quot;username&quot; type=&quot;varchar(255)&quot;&gt;
+        &lt;constraints nullable=&quot;false&quot;/&gt;
+      &lt;/column&gt;
+      &lt;column name=&quot;email&quot; type=&quot;varchar(255)&quot;&gt;
+        &lt;constraints nullable=&quot;false&quot;/&gt;
+      &lt;/column&gt;
+      &lt;column name=&quot;password&quot; type=&quot;char(32)&quot;&gt;
+        &lt;constraints nullable=&quot;false&quot;/&gt;
+      &lt;/column&gt;
+      &lt;column name=&quot;recovery&quot; type=&quot;char(32)&quot;&gt;
+        &lt;constraints nullable=&quot;false&quot;/&gt;
+      &lt;/column&gt;
+      &lt;column name=&quot;zip&quot; type=&quot;varchar(10)&quot;&gt;
+        &lt;constraints nullable=&quot;false&quot;/&gt;
+      &lt;/column&gt;
+      &lt;column name=&quot;updated_on&quot; type=&quot;datetime&quot;&gt;
+        &lt;constraints nullable=&quot;false&quot;/&gt;
+      &lt;/column&gt;
+    &lt;/createTable&gt;
+  &lt;/changeSet&gt;
+
+&lt;/databaseChangeLog&gt;
+</pre>
+
+</div>
+
+<div class="slide">
+<h1>Creating a Phing Migration Target</h1>
+
+<p>
+Want to identify the platform and provide a tag:
+</p>
+
+<pre>
+$ phing up
+Enter environment name (development, production): [] ? production
+...
+Provide a migration tag: [] ? create-games
+</pre>
+
+<pre>
+&lt;!-- Migrate database using Liquibase --&gt;
+&lt;target name=&quot;up&quot; description=&quot;Migrate local database&quot;&gt;  
+
+&lt;propertyprompt propertyName=&quot;env&quot; promptText=&quot;Enter environment name (development, production):&quot; /&gt;
+&lt;property file=&quot;properties/${env}.properties&quot; /&gt;
+
+&lt;propertyprompt propertyName=&quot;tag&quot; promptText=&quot;Provide a migration tag:&quot; /&gt;
+
+&lt;echo msg=&quot;Migrating ${env} database:&quot; /&gt;
+
+&lt;exec
+  command=&quot;liquibase --driver=com.mysql.jdbc.Driver
+     --classpath=/usr/share/java/mysql-connector-java.jar
+     --changeLogFile=db.changelog.xml
+     --url=jdbc:mysql://${mysql.host}/${mysql.database}
+     --username=${mysql.username}
+     --password=${mysql.pswd}
+     migrate&quot; /&gt;
+
+&lt;echo msg=&quot;Tagging database migration with ${tag}:&quot; /&gt;
+
+&lt;exec
+  command=&quot;liquibase --driver=com.mysql.jdbc.Driver
+     --classpath=/usr/share/java/mysql-connector-java.jar
+     --changeLogFile=db.changelog.xml
+     --url=jdbc:mysql://${mysql.host}/${mysql.database}
+     --username=${mysql.username}
+     --password=${mysql.pswd}
+     tag ${tag}&quot; /&gt;
+
+&lt;/target&gt;
+</pre>
+
+</div>
+
+<div class="slide">
+<h1>Creating a Phing Migration Target</h1>
+
+<p>
+Can roll back migrations according to count or tag:
+</p>
+
+<pre>
+&lt;target name=&quot;down&quot; description=&quot;Rollback database migration&quot;&gt;
+
+&lt;propertyprompt propertyName=&quot;env&quot; promptText=&quot;Enter environment name (development, production):&quot; /&gt;
+&lt;property file=&quot;properties/${env}.properties&quot; /&gt;
+
+&lt;propertyprompt propertyName=&quot;count&quot; promptText=&quot;Rollback how many migrations:&quot; /&gt;
+
+&lt;echo msg=&quot;Rolling back ${env} database to ${count}:&quot; /&gt;
+
+&lt;exec
+  command=&quot;liquibase --driver=com.mysql.jdbc.Driver
+     --classpath=/usr/share/java/mysql-connector-java.jar
+     --changeLogFile=db.changelog.xml
+     --url=jdbc:mysql://${mysql.host}/${mysql.database}
+     --username=${mysql.username}
+     --password=${mysql.pswd}
+     rollbackCount ${count}&quot; /&gt;
+
+&lt;/target&gt;
+</pre>
+
+</div>
+
+<div class="slide">
+<h1>Conclusion</h1>
+
+<p>
+E-mail me at wj@wjgilmore.com. Follow me at @wjgilmore.
+</p>
+
+</div>
+
+</body>
+</html>
+
+

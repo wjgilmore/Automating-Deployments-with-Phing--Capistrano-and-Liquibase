@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<project name="WJGames" default="echo">
+
+<!-- Set the DSTAMP, TSTAMP, and TODAY properties-->
+<tstamp/>
+
+<property name="mysql.dumpfile" 
+          value="/home/wjgilmore/backups-db/wjgames${DSTAMP}${TSTAMP}.sql" />
+<property name="mysql.dev.host" value="localhost" />
+<property name="mysql.dev.username" value="root" />
+<property name="mysql.dev.pswd" value="jason" />
+<property name="mysql.dev.database" value="dev_wjgames_com" />
+
+<property name="mysql.prod.host" value="mysql.wjgilmore.com" />
+<property name="mysql.prod.username" value="prod_wjgames_com" />
+<property name="mysql.prod.pswd" value="123dbdb7" />
+<property name="mysql.prod.database" value="prod_wjgames_com" />
+
+<property name="progs.mysql" value="/usr/bin/mysql" />
+
+<property name="build.directory" value="build" />
+
+<property name="build.dbdeploy.deployfile" value="db/scripts/deploy-${DSTAMP}${TSTAMP}.sql" />
+<property name="build.dbdeploy.undofile" value="db/scripts/undo-${DSTAMP}${TSTAMP}.sql" />
+
+
+<target name="echo" description="Demonstration echo statement">
+  <echo msg="Cleaning Cache..." />
+</target>
+
+<target name="clean" description="Clean cache">
+  <echo msg="Cleaning Cache..." />
+  <delete>
+    <fileset dir="./cache">
+      <include name="*" />
+    </fileset>
+  </delete>
+</target>
+
+<target name="create" description="Create dummy cache files">
+  <exec command="touch cache1.file" dir="cache" />
+  <exec command="touch cache2.file" dir="cache" />
+  <exec command="touch cache3.file" dir="cache" />
+</target>
+
+<!-- Dump the MySQL database -->
+<target name="backup" description="Backup database">
+ <echo msg="Dumping development database." />
+ <exec command="mysqldump -u ${mysql.dev.username} -p${mysql.dev.pswd} 
+                ${mysql.dev.database} > ${mysql.dumpfile}" escape="false" />
+</target>
+
+<!-- Deploy website to production server -->
+<target name="deploy" description="Deploy to production server">
+  <exec command="cap deploy" />
+</target>
+
+<!-- Rollback website on production server -->
+<target name="rollback" description="Rollback latest changes">
+  <exec command="cap deploy:rollback" />
+</target>
+
+<!-- Migrate database using Liquibase -->
+<target name="up" description="Migrate local database">  
+
+<propertyprompt propertyName="env" promptText="Enter environment name (development, production):" />
+<property file="properties/${env}.properties" />
+
+<propertyprompt propertyName="tag" promptText="Provide a migration tag:" />
+
+<echo msg="Migrating ${env} database:" />
+
+<exec
+  command="liquibase --driver=com.mysql.jdbc.Driver
+     --classpath=/usr/share/java/mysql-connector-java.jar
+     --changeLogFile=db.changelog.xml
+     --url=jdbc:mysql://${mysql.host}/${mysql.database}
+     --username=${mysql.username}
+     --password=${mysql.pswd}
+     migrate" />
+
+<echo msg="Tagging database migration with ${tag}:" />
+
+<exec
+  command="liquibase --driver=com.mysql.jdbc.Driver
+     --classpath=/usr/share/java/mysql-connector-java.jar
+     --changeLogFile=db.changelog.xml
+     --url=jdbc:mysql://${mysql.host}/${mysql.database}
+     --username=${mysql.username}
+     --password=${mysql.pswd}
+     tag ${tag}" />
+
+</target>
+
+<target name="down" description="Rollback database migration">
+
+<propertyprompt propertyName="env" promptText="Enter environment name (development, production):" />
+<property file="properties/${env}.properties" />
+
+<propertyprompt propertyName="count" promptText="Rollback how many migrations:" />
+
+<echo msg="Rolling back ${env} database to ${count}:" />
+
+<exec
+  command="liquibase --driver=com.mysql.jdbc.Driver
+     --classpath=/usr/share/java/mysql-connector-java.jar
+     --changeLogFile=db.changelog.xml
+     --url=jdbc:mysql://${mysql.host}/${mysql.database}
+     --username=${mysql.username}
+     --password=${mysql.pswd}
+     rollbackCount ${count}" />
+
+</target>
+
+
+</project>
