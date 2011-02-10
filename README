@@ -1,6 +1,9 @@
 Automating Deployments and Other Annoying Tasks with Phing, Capistrano and Liquibase
-by: W. Jason Gilmore (wj@wjgilmore.com)
+Copyright 2011 W.J. Gilmore, LLC (wj@wjgilmore.com)
 
 Slides and accompanying build.xml file included
+
+Requirements
+To run the Capistrano-related examples you'll need to install the capistrano and railsless-deploy gems. To run the Liquibase examples you'll need to install Liquibase.
 
 Questions? Contact me at wj@wjgilmore.com
