@@ -14,7 +14,7 @@
 
 <property name="mysql.prod.host" value="mysql.wjgilmore.com" />
 <property name="mysql.prod.username" value="prod_wjgames_com" />
-<property name="mysql.prod.pswd" value="123dbdb7" />
+<property name="mysql.prod.pswd" value="PASSWORD" />
 <property name="mysql.prod.database" value="prod_wjgames_com" />
 
 <property name="progs.mysql" value="/usr/bin/mysql" />
