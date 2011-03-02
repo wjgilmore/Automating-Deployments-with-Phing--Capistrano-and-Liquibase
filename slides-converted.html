@@ -46,7 +46,11 @@
 <h1>Automating and Deploying with Phing</h1>
 
 <p>
- <p><a href="http://www.wjgilmore.com/">W. Jason Gilmore</a>  (wj@wjgilmore.com). Follow me on the Twitter at @wjgilmore
+ <p><a href="http://www.wjgilmore.com/">W. Jason Gilmore</a>  (wj@wjgilmore.com). Follow me on the Twitter at <a href="http://www.twitter.com/wjgilmore">@wjgilmore</a>.
+</p>
+
+<p>
+Download these slides from <a href="http://www.github.com/wjgilmore">http://www.github.com/wjgilmore</a>.
 </p>
 
 </div>
@@ -61,28 +65,42 @@
   <li>Contributor to Developer.com, PHPBuilder.com, JSMag, and TechTarget</li>
   <li>Freelance project editor for Wiley</li>
   <li>CodeMash Cofounder (<a href="http://www.codemash.org">www.codemash.org</a>)</li>
-  <li>Contact me with questions! wj@wjgilmore.com and follow me on Twitter @wjgilmore</li>
+  <li>Contact me with questions! wj@wjgilmore.com and follow me on Twitter <a href="http://www.twitter.com/wjgilmore">@wjgilmore</a></li>
 </ul>
 
 </div>
 
 <div class="slide">
-<h1>Beginning PHP and MySQL, Fourth Edition</h1>
+<h1>Special Book Discounts</h1>
 
 <div style="float:left; padding: 5px;">
 <img src="4e.png" alt="" />
 </div>
 
 <div style="float:left;">
-<b>Beginning PHP and MySQL, Fourth Edition</b><br />
-Buy it for <b>$25</b> from WJGilmore.com using the code columbusphp4
+<p><b>Beginning PHP and MySQL, Fourth Edition</b><br />
+800+ pages, 37 chapters<br />
+Buy it for <b>$25</b> from <a href="http://www.wjgilmore.com">WJGilmore.com</a> using the code pittsburghphp
+</p>
+</div>
 
+<br clear="all" />
+
+<div style="float:left; padding: 5px;">
+<img src="epwzf2.png" alt="" />
+</div>
+
+<div style="float:left;">
+<p><b>Easy PHP Websites with the Zend Framework</b><br />
+Doctrine 2 integration, PHPUnit integration, deployment topics, much much more<br />
+Buy it for <b>$20</b> from <a href="http://www.wjgilmore.com">WJGilmore.com</a>
+</p>
 </div>
 
 </div>
 
 <div class="slide">
-<h1>Automating Project Tasks and Deployment</h1>
+<h1>Automation Relieves Stress</h1>
 
 <ul>
   <li>Creating new features is fun. Dealing with tedious tasks is not.</li>
@@ -147,7 +165,7 @@ Phing <i>targets</i> are named groups of <i>tasks</i> you can define within the 
 &lt;project name=&quot;WJGames&quot; default=&quot;echo&quot;&gt;
 
 &lt;target name=&quot;echo&quot; description=&quot;Demonstration echo statement&quot;&gt;
-  &lt;echo msg=&quot;Cleaning Cache...&quot; /&gt;
+  &lt;echo msg=&quot;Echoing something to the screen...&quot; /&gt;
 &lt;/target&gt;
 
 &lt;target name=&quot;backup&quot; description=&quot;Backup database&quot;&gt;
@@ -191,6 +209,21 @@ To view a list of available targets, execute <code>phing</code> with the <code>-
 
 <pre>
 $ phing -l
+Buildfile: /var/www/dev.wjgames.com/build.xml
+Default target:
+-------------------------------------------------------------------------------
+ echo      Demonstration echo statement
+
+Main targets:
+-------------------------------------------------------------------------------
+ backup    Backup database
+ clean     Clean cache
+ create    Create dummy cache files
+ deploy    Deploy to production server
+ down      Rollback database migration
+ echo      Demonstration echo statement
+ rollback  Rollback latest changes
+ up        Migrate local database
 </pre>
 
 </div>
@@ -238,6 +271,10 @@ Can use Phing's <code>exec</code> command to execute system commands:
 <div class="slide">
 <h1>Creating a Directory</h1>
 
+<p>
+Be sure to look for native Phing commands to ensure cross-platform compatibility:
+</p>
+
 <pre>
 &lt;target name=&quot;prepare&quot;&gt;
  &lt;echo msg=&quot;Creating the release directory&quot; /&gt;
@@ -254,7 +291,7 @@ Backup MySQL database using <code>mysqldump</code>:
 </p>
   
 <pre>
-$ mysqldump -u root -p dev_wjgames_com &gt; dev_wjgames_com_020911.sql
+$ mysqldump -u root -p dev_wjgames_com &gt; dev_wjgames_com_030211.sql
 </pre>
 
 <p>
@@ -289,7 +326,7 @@ Then just run the task:
 </pre>
 
 <p>
-Alternatively you can do this:
+Want a different timestamp format? Change it like this:
 </p>
 
 <pre>
@@ -327,8 +364,9 @@ Capistrano is a popular open source tool used by the Ruby community primarily fo
 </p>
 
 <ul>
-<li>Automatically rolls back the build should a problem occur</li>
-<li>Can perform "post-build" tasks such as symlinking</li>
+<li>Can work in unison with your version control solution</li>
+<li>Automatically rolls back the deployment to last stable state should a problem occur</li>
+<li>Can perform post-deployment tasks such as symlinking</li>
 <li>Special version called <code>railsless-deploy</code> which removes "railsisms"</li>
 </ul>
 
@@ -389,44 +427,47 @@ Now create a file named <code>config/deploy.rb</code> and add this to it:
 </p>
 
 <pre>
+# What is the name of the local application?
+set :application, &quot;wjgames.wjgilmore.com&quot;
+
 # What user is connecting to the remote server?
-set :user, &quot;wjgilmore&quot;
+set :user, &quot;wjgilmorecom&quot;
 
 # Where is the local repository?
 set :repository,  &quot;file:///var/www/dev.wjgames.com&quot;
 
-# Where are we deploying the files to?
-set :deploy_to,   &quot;/home/wjgilmore/wjgames.wjgilmore.com&quot;
-
-# Where are the shared files stored?
-set :shared_path, &quot;/home/wjgilmore/wjgames.wjgilmore.com/current/shared&quot;
-
-# We don't need to use sudo to manipulate files on the remote server
-set :use_sudo, false
- 
-# How are we retrieving and deploying the source files?
-
-set :scm,        :git
-set :branch,     'master'
-set :deploy_via, :copy
- 
-# How many releases do we want to keep?
-set :keep_releases 5
-
-# Which server are we deploying to?
-
+# What is the production server domain?
 role :web, &quot;wjgames.wjgilmore.com&quot;
 
-# Symlink the proper .htaccess file in order to make sure the 
-# production server's APPLICATION_ENV variable is set to production
+# What remote directory hosts the production website?
+set :deploy_to,   &quot;/home/wjgilmore/wjgames.wjgilmore.com&quot;
+
+# Is sudo required to manipulate files on the remote server?
+set :use_sudo, false
  
+# What version control solution does the project use?
+set :scm,        :git
+set :branch,     'master'
+
+# How are the project files being transferred?
+# Consider looking at :remote_cache too!
+set :deploy_via, :copy
+
+# Maintain a local repository cache. This speeds up the :copy process
+set :copy_cache, true
+
+# Ignore any local files?
+set :copy_exclude, %w(.git)
+ 
+# This task will symlink the proper .htaccess file to ensure the 
+# production server's APPLICATION_ENV variable is set to production
 task :create_symlinks, :roles =&gt; :web do
   run &quot;rm #{current_release}/public/.htaccess&quot;
-  run &quot;ln -s #{shared_path}/.htaccess #{current_release}/public/.htaccess&quot;
+  run &quot;ln -s #{current_release}/shared/.htaccess #{current_release}/public/.htaccess&quot;
 end
  
-# Create the .htaccess symlink
- 
+# After deployment has successfully completed
+# create the .htaccess symlink
 after &quot;deploy:finalize_update&quot;, :create_symlinks
 </pre>
 
@@ -634,18 +675,29 @@ Provide a migration tag: [] ? create-games
 <h1>Creating a Phing Migration Target</h1>
 
 <p>
-Can roll back migrations according to count or tag:
+Create multiple target-specific property files <code>development.properties</code>):
 </p>
 
 <pre>
-&lt;target name=&quot;down&quot; description=&quot;Rollback database migration&quot;&gt;
+mysql.host = localhost
+mysql.username = USERNAME
+mysql.pswd = PASSWORD
+mysql.database = DATABASE
+</pre>
+
+<p>
+Can interactive target-specific migrations:
+</p>
+
+<pre>
+&lt;target name=&quot;up&quot; description=&quot;Migrate local database&quot;&gt;  
 
 &lt;propertyprompt propertyName=&quot;env&quot; promptText=&quot;Enter environment name (development, production):&quot; /&gt;
 &lt;property file=&quot;properties/${env}.properties&quot; /&gt;
 
-&lt;propertyprompt propertyName=&quot;count&quot; promptText=&quot;Rollback how many migrations:&quot; /&gt;
+&lt;propertyprompt propertyName=&quot;tag&quot; promptText=&quot;Provide a migration tag:&quot; /&gt;
 
-&lt;echo msg=&quot;Rolling back ${env} database to ${count}:&quot; /&gt;
+&lt;echo msg=&quot;Migrating ${env} database:&quot; /&gt;
 
 &lt;exec
   command=&quot;liquibase --driver=com.mysql.jdbc.Driver
@@ -654,9 +706,28 @@ Can roll back migrations according to count or tag:
      --url=jdbc:mysql://${mysql.host}/${mysql.database}
      --username=${mysql.username}
      --password=${mysql.pswd}
-     rollbackCount ${count}&quot; /&gt;
+     migrate&quot; /&gt;
+
+&lt;echo msg=&quot;Tagging database migration with ${tag}:&quot; /&gt;
+
+&lt;exec
+  command=&quot;liquibase --driver=com.mysql.jdbc.Driver
+     --classpath=/usr/share/java/mysql-connector-java.jar
+     --changeLogFile=db.changelog.xml
+     --url=jdbc:mysql://${mysql.host}/${mysql.database}
+     --username=${mysql.username}
+     --password=${mysql.pswd}
+     tag ${tag}&quot; /&gt;
 
 &lt;/target&gt;
+</pre>
+
+<p>
+Execute <code>phing up</code> to migrate database forward:
+</p>
+
+<pre>
+$ phing up
 </pre>
 
 </div>
